@@ -78,9 +78,11 @@ int ytcpsocket_connect(const char *host, int port, int timeout) {
             close(sockfd);
             return -4;//connect fail
         }
-      
+
+#ifdef __APPLE__
         int set = 1;
         setsockopt(sockfd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+#endif
         return sockfd;
     }
 }
@@ -187,8 +189,10 @@ int ytcpsocket_accept(int onsocketfd, char *remoteip, int *remoteport, int timeo
     memcpy(remoteip, clientip, strlen(clientip));
     *remoteport = cli_addr.sin_port;
     if (newsockfd > 0) {
+#ifdef __APPLE__
         int set = 1;
         setsockopt(newsockfd, SOL_SOCKET, SO_NOSIGPIPE, (void*) &set, sizeof(int));
+#endif
         return newsockfd;
     } else {
         return -1;
